@@ -25,13 +25,6 @@ http() {
   $HTTP --timeout=$HTTP_TIMEOUT "$@"
 }
 
-http-status() {
-  case "${1:-}" in
-    test) shift; [ "$http_status" = ${1:-} ];;
-    *) echo $http_status
-  esac
-}
-
 inspect() {
   echo -ne "\tINSPECTION: "
   case "${2:-}" in
@@ -58,14 +51,38 @@ fail() {
   [ "$1" ] || set -- failed! See $LOG.
   case "$1" in
     -c) shift; _continue=true;;
-    http-status) shift; set -- "http_status=$(http_status)";;
-    no-response) shift; set -- no reponse was given!;;
   esac
   echo -e "\t\033[;31mFAIL: "$@" \033[0m "
   if ! $_continue; then exit 1; fi
 }
 
 assert() {
+  local expected
+  declare -r _type=$1; shift
+  case "$_type" in
+    response-available)
+      set -- 'response should no be null' \
+        '[ "${response:-}" ]'
+      ;;
+    http-status)
+      expected=$1; shift;
+      set -- "http_status should be equals to $expected" \
+        '[ "$http_status" = $expected ]'
+      ;;
+    expected)
+      expected=$1; shift;
+      set -- "${1/expected/$expected}"
+      ;;
+    equals)
+      local expected2
+      expected=$1; shift
+      expected2=$1; shift
+      set -- "$expected should be equals to $expected2" \
+        '[ "${!expected}" = "${!expected2}" ]'
+      ;;
+    *)
+      error "assert syntax error!"
+  esac
   declare -r assertion=$1; shift
   declare -r assessment=$@
   echo -e "\tASSERTION: $assertion"
