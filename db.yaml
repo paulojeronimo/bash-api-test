@@ -1,0 +1,9 @@
+users:
+  - id: paulojeronimo
+    firstName: Paulo
+    lastName: Jerônimo
+    email: paulojeronimo@gmail.com
+  - id: fulanodasilva
+    firstName: Fulano
+    lastName: Silva
+    email: fulanodasilva@gmail.com

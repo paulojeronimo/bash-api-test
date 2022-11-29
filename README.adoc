@@ -1,0 +1,60 @@
+= bash-api-test
+:toc: left
+:toc-title: {doctitle}
+:icons: font
+:idprefix:
+:idseparator: -
+:nofooter:
+:numbered:
+:sectanchors:
+
+// URIs
+:uri-termux: https://termux.dev/en/
+:uri-macos: https://www.apple.com/macos/ventura/
+:uri-ubuntu: https://ubuntu.com/
+:uri-bash5: https://www.gnu.org/software/bash/
+:uri-httpie: https://httpie.io/
+:uri-jq: https://stedolan.github.io/jq/
+
+// Attributes
+:Termux: {uri-termux}[Termux^]
+:Ubuntu: {uri-ubuntu}[Ubuntu^]
+:macOS: {uri-macOS}[macOS^]
+:Ubuntu: {uri-ubuntu}[Ubuntu^]
+:Bash5: {uri-bash5}[Bash 5^]
+:httpie: {uri-httpie}[httpie^]
+:jq: {uri-jq}[jq^]
+
+== Introduction
+
+This project is a Bash REST API Test framework.
+
+Main goals:
+
+. Executable on {Ubuntu}, {Termux} and {macOS}.
+
+Requirements:
+
+. {Bash5}.
+. {httpie}.
+. {jq}.
+
+== Running a test REST API Server (via json-server)
+
+----
+$ ./api-server.sh install
+$ ./api-server.sh start
+----
+
+* References:
+** `npm`: https://nodejs.org/pt-br/download/package-manager/
+** `yq`: https://github.com/mikefarah/yq
+** `json-server`: https://github.com/typicode/json-server
+
+== Testing the REST API
+
+Alternative 1 (of 2):
+
+----
+$ ./sample-tests.test.sh
+----
