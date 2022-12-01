@@ -4,7 +4,7 @@ set -eou pipefail
 usage() {
   cat<<-EOF
 	Usage:
-	$0 <install|reset-db|start>
+	$0 <install|reset-db|start|restart>
 	EOF
 }
 
@@ -24,6 +24,10 @@ case "${1:-}" in
     ;;
   start)
     json-server -w "$DB_JSON"
+    ;;
+  restart)
+    $0 reset-db
+    $0 start
     ;;
   *) usage
 esac
