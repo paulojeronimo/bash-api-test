@@ -1,6 +1,13 @@
 #/usr/bin/env bash
 set -eou pipefail
 
+usage() {
+  cat<<-EOF
+	Usage:
+	$0 <install|reset-db|start>
+	EOF
+}
+
 DB_YAML=${DB_YAML:-db.yaml}
 DB_JSON=${DB_JSON:-db.json}
 
@@ -18,4 +25,5 @@ case "${1:-}" in
   start)
     json-server -w "$DB_JSON"
     ;;
+  *) usage
 esac
