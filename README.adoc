@@ -15,6 +15,7 @@
 :uri-bash5: https://www.gnu.org/software/bash/
 :uri-httpie: https://httpie.io/
 :uri-jq: https://stedolan.github.io/jq/
+:uri-ngrok: https://ngrok.com/
 
 // Attributes
 :Termux: {uri-termux}[Termux^]
@@ -24,6 +25,7 @@
 :Bash5: {uri-bash5}[Bash 5^]
 :httpie: {uri-httpie}[httpie^]
 :jq: {uri-jq}[jq^]
+:ngrok: {uri-ngrok}[ngrok^]
 
 == Introduction
 
@@ -41,16 +43,66 @@ Requirements:
 
 == Running a test REST API Server (via json-server)
 
+=== Install and start
+
 ----
 $ ./api-server.sh install
 $ ./api-server.sh start
 ----
+
+[NOTE]
+====
+If you need to start the server in a different port, use the
+variable `PORT` like in the following example:
+
+----
+$ PORT=7080 ./api-server.sh start
+----
+
+Also, note that you will need to configure the `SERVER_PATH` before
+<<testing,testing>>.
+====
 
 * References:
 ** `npm`: https://nodejs.org/pt-br/download/package-manager/
 ** `yq`: https://github.com/mikefarah/yq
 ** `json-server`: https://github.com/typicode/json-server
 
+=== Reset database (to the default contents -> db.yaml)
+
+----
+$ ./api.server.sh reset-db
+----
+
+=== Restart (reset-db and start)
+
+----
+$ ./api-server.sh restart
+----
+
+=== Access the server through ngrok
+
+{ngrok} offers a clever way to access your local environment through a
+public link on the Internet.
+
+On another shell, start:
+
+----
+$ ./api-server.sh ngrok
+
+----
+
+Copy the `Forwarding` link on ngrok interface to configure
+`$SERVER_PATH` before <<testing,calling the script to test the API>>.
+Do this as in the example below:
+
+----
+$ export SERVER_PATH=https://7ea6-2804-7f3-858a-41b3-2ad0-69e1-97d6-c01b.sa.ngrok.io
+----
+
+NOTE: After shutdown the ngrok server, type: `unset SERVER_PATH`.
+
+[[testing]]
 == Testing the REST API
 
 Alternative 1:

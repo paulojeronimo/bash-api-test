@@ -4,10 +4,11 @@ set -eou pipefail
 usage() {
   cat<<-EOF
 	Usage:
-	$0 <install|reset-db|start|restart>
+	$0 <install|reset-db|start|restart|ngrok>
 	EOF
 }
 
+PORT=${PORT:-3000}
 DB_YAML=${DB_YAML:-db.yaml}
 DB_JSON=${DB_JSON:-db.json}
 
@@ -23,11 +24,14 @@ case "${1:-}" in
     yq -o json "$DB_YAML" > "$DB_JSON"
     ;;
   start)
-    json-server -w "$DB_JSON"
+    json-server -p $PORT -w "$DB_JSON"
     ;;
   restart)
     $0 reset-db
     $0 start
+    ;;
+  ngrok)
+    ngrok http $PORT
     ;;
   *) usage
 esac
