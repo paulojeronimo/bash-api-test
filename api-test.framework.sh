@@ -1,21 +1,20 @@
-# vim: syntax=bash
+#!/usr/bin/env bash
+set -eou pipefail
 
 :<<'USAGE'
 Usage:
-$ $0 <all|test-1 ... test-n>
+$RUNNER <all|test-1 ... test-n>
 
 Examples:
-$ $0 all
-$ $0 test-1
-$ $0 test-1 test-2
+$RUNNER all
+$RUNNER test-1
+$RUNNER test-1 test-2
 USAGE
 
 : ${JQ=$(command -v jq)}
 : ${HTTP=$(command -v http)}
-TEST_SCRIPT=$(caller | cut -d ' ' -f2)
-TEST_SCRIPT=${TEST_SCRIPT/test./}
+SERVER_PATH=${SERVER_PATH:-:3000}
 HTTP_TIMEOUT=${HTTP_TIMEOUT:-4.5}
-LOG=${LOG:-${TEST_SCRIPT%.sh}.log}
 
 jq() {
   $JQ -S --ascii-output "$@"
@@ -194,7 +193,7 @@ print-usage-details-or-go-ahead() {
   then
     sed -n "/^:<<'USAGE'$/,/^USAGE$/{//!p}" ${BASH_SOURCE[0]} | \
     sed "
-      s,\$0,$TEST_SCRIPT,g
+      s,\$RUNNER,$RUNNER,g
       s,test-1,${TESTS[0]},g
       s,test-n,${TESTS[-1]},g
     " | \
@@ -230,3 +229,28 @@ save-function() {
   local newname_func="$2${orig_func#$1}"
   eval "$newname_func"
 }
+
+__is-runnable() {
+  [ "${0##*/}" = "api-test.framework.sh" ]
+}
+
+RUNNER=$0
+if __is-runnable
+then
+  [ "${1:-}" ] || { echo "Test file?"; exit 1; }
+  TEST_SCRIPT=$1
+  RUNNER="$RUNNER $TEST_SCRIPT"
+  shift
+else
+  TEST_SCRIPT=$(caller | cut -d ' ' -f2)
+fi
+TEST_SCRIPT=${TEST_SCRIPT/runner./}
+LOG=${LOG:-${TEST_SCRIPT%.sh}.log}
+if __is-runnable
+then
+  if [ -f "$TEST_SCRIPT" ]
+  then
+		source $TEST_SCRIPT
+		run-tests "$@"
+  fi
+fi

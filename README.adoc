@@ -53,8 +53,14 @@ $ ./api-server.sh start
 
 == Testing the REST API
 
-Alternative 1 (of 2):
+Alternative 1:
 
 ----
-$ ./sample-tests.test.sh
+$ ./sample-tests.runner.sh
+----
+
+Alternative 2:
+
+----
+$ ./api-test.framework.sh sample-tests.sh
 ----
