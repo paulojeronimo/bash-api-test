@@ -262,12 +262,11 @@ else
   TEST_SCRIPT=$(caller | cut -d ' ' -f2)
 fi
 TEST_SCRIPT=${TEST_SCRIPT/runner./}
+TEST_SCRIPT_LIB=${TEST_SCRIPT%.sh}.lib.sh
 LOG=${LOG:-${TEST_SCRIPT%.sh}.log}
-if __is-runnable
+if [ -f "$TEST_SCRIPT" ]
 then
-  if [ -f "$TEST_SCRIPT" ]
-  then
-		source $TEST_SCRIPT
-		run-tests "$@"
-  fi
+  ! [ -f "$TEST_SCRIPT_LIB" ] || source $TEST_SCRIPT_LIB
+  source $TEST_SCRIPT
+  ! __is-runnable || run-tests "$@"
 fi

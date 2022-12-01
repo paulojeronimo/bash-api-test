@@ -1,14 +1,13 @@
 #vim: syntax=bash
 
-source ./${TEST_SCRIPT%.sh}.lib.sh
-
 test-get-users() {
   header "$GET_USERS"
   get-users-and-assert-number-of-users 2
 }
 
 test-add-and-delete-user() {
-  declare -A new_user=([firstName]=Beltrano [lastName]=Santos [email]='beltranodossantos@example.com')
+  declare -A new_user=([firstName]=Beltrano \
+    [lastName]=Santos [email]='beltranodossantos@example.com')
   new_user[id]=$(get-id-from-email ${new_user[email]})
   header "${FUNCNAME#test-}" "with id \"${new_user[id]}\""
 
