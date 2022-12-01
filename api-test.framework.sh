@@ -60,7 +60,7 @@ assert() {
   declare -r _type=$1; shift
   case "$_type" in
     response-available)
-      set -- 'response should no be null' \
+      set -- 'response should not be null' \
         '[ "${response:-}" ]'
       ;;
     http-status)
@@ -139,6 +139,23 @@ POST() {
   done
   local path="$SERVER_PATH$1"; shift
   if response=$(http $http_params "$path" "$@" 2> "$LOG")
+  then
+    set-response
+  else
+    unset-response
+  fi
+}
+
+DELETE() {
+  local http_params='--print=hb'
+  while [[ ${1:-} =~ ^- ]]
+  do
+    http_params="$http_params $1"
+    shift
+  done
+  local path="$SERVER_PATH$1"; shift
+  local id=$1
+  if response=$(http $http_params DELETE "$path/$id" 2> "$LOG")
   then
     set-response
   else
