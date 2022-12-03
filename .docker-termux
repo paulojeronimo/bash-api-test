@@ -1,0 +1,3 @@
+# vim: syntax=bash
+
+container_name=${PWD##*/}

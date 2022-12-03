@@ -24,7 +24,19 @@ case "${1:-}" in
     yq -o json "$DB_YAML" > "$DB_JSON"
     ;;
   start)
-    json-server -p $PORT -w "$DB_JSON"
+    shift
+    case "${1:-}" in
+      --with-tmux)
+        tmux \
+          new-session \; \
+          split-window "$0 start" \; \
+          select-pane -U
+        ;;
+      *)
+        [ -f "$DB_JSON" ] || $0 reset-db
+        json-server -p $PORT -w "$DB_JSON"
+        ;;
+    esac
     ;;
   restart)
     $0 reset-db
