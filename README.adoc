@@ -15,7 +15,12 @@
 :uri-bash5: https://www.gnu.org/software/bash/
 :uri-httpie: https://httpie.io/
 :uri-jq: https://stedolan.github.io/jq/
+:uri-yq: https://github.com/mikefarah/yq
 :uri-ngrok: https://ngrok.com/
+:uri-node: https://nodejs.org/
+:uri-npm: https://nodejs.org/download/package-manager/
+:uri-json-server: https://github.com/typicode/json-server
+:uri-docker-termux: https://github.com/paulojeronimo/dotfiles/blob/master/.scripts/docker/docker-termux
 
 // Attributes
 :Termux: {uri-termux}[Termux^]
@@ -25,7 +30,9 @@
 :Bash5: {uri-bash5}[Bash 5^]
 :httpie: {uri-httpie}[httpie^]
 :jq: {uri-jq}[jq^]
+:yq: {uri-yq}[yq^]
 :ngrok: {uri-ngrok}[ngrok^]
+:docker-termux: {uri-docker-termux}[docker-termux^]
 
 == Introduction
 
@@ -33,20 +40,72 @@ This project is a Bash REST API Test framework.
 
 Main goals:
 
-. Executable on {Ubuntu}, {Termux} and {macOS}.
+. Executable on {Termux} or <<through-docker,through Docker>>.
 
 Requirements:
 
 . {Bash5}.
 . {httpie}.
 . {jq}.
+. {yq}.
 
-== Running a test REST API Server (via json-server)
+Tested with the following platforms/ versions:
+
+[[Ubuntu]]
+.Ubuntu 22.04
+****
+-----
+$ lsb_release -a
+No LSB modules are available.
+Distributor ID: Ubuntu
+Description:    Ubuntu 22.04.1 LTS
+Release:        22.04
+Codename:       jammy
+
+$ echo $BASH_VERSION
+5.1.16(1)-release
+
+$ node --version
+v16.18.1
+
+$ json-server --version
+0.17.1
+
+$ httpie --version
+3.2.1
+
+$ jq --version
+jq-1.6
+
+$ yq --version
+yq (https://github.com/mikefarah/yq/) version v4.30.5
+
+$ docker --version
+Docker version 20.10.12, build 20.10.12-0ubuntu4
+-----
+****
+
+[[running-the-server]]
+== Running a test REST API Server
 
 === Install and start
 
+The following command will install <<json-server>> in order to run a
+REST API with the initial database provided by the file `db.yaml`.
+
 ----
 $ ./api-server.sh install
+----
+
+[NOTE]
+====
+If the file `db.json` does not exists it will be automatically generated
+with a call to <<reset-db>>.
+====
+
+To start the server type:
+
+----
 $ ./api-server.sh start
 ----
 
@@ -63,13 +122,15 @@ Also, note that you will need to configure the `SERVER_PATH` before
 <<testing,testing>>.
 ====
 
-* References:
-** `npm`: https://nodejs.org/pt-br/download/package-manager/
-** `yq`: https://github.com/mikefarah/yq
-** `json-server`: https://github.com/typicode/json-server
+* Requirements to run `api-server.sh`:
+** `node`: {uri-node}
+** `npm`: {uri-npm}
+** [[yq]] `yq`: {uri-yq}
+** [[json-server]] `json-server`: {uri-json-server}
 
 === Reset database (to the default contents -> db.yaml)
 
+[[reset-db]]
 ----
 $ ./api.server.sh reset-db
 ----
@@ -116,3 +177,30 @@ Alternative 2:
 ----
 $ ./api-test.framework.sh sample-tests.sh
 ----
+
+[[through-docker]]
+== Testing the commands above through Docker
+
+Download the `docker-termux` script:
+
+----
+$ curl -sSL https://raw.githubusercontent.com/paulojeronimo/dotfiles/master/.scripts/docker/docker-termux -o docker-termux
+----
+
+NOTE: {docker-termux} was successfuly tested on macOS and <<Ubuntu>>
+environments.
+
+Start it:
+
+----
+$ ./docker-termux
+----
+
+Call the `termux-setup.sh` this way:
+
+----
+$ clone=false . /mnt/bash-api-test/termux-setup.sh
+----
+
+After this you can <<running-the-server,run the REST API Server and>>
+and <<testing,test the REST API>>.

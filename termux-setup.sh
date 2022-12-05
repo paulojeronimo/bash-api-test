@@ -4,6 +4,7 @@ repo_service=${repo_service:-https://github.com}
 repo=${repo:-paulojeronimo/bash-api-test}
 dotdir=.${repo#*/}
 repo_tag=${1:-main}
+clone=${clone:-true}
 LOG_LINK=termux-install.log
 
 is-installed() {
@@ -68,10 +69,15 @@ is-installed json-server || log npm install -g json-server
 repo_dir=$(basename $repo)
 if ! [ -d $repo_dir ]
 then
-  log git clone $repo_service/$repo
+  if $clone
+  then
+    log git clone $repo_service/$repo
+  else
+    ln -sf /mnt/$repo_dir
+  fi
   echo Changing the current directory to \~/$repo_dir \(branch $repo_tag\)
   cd $repo_dir
-  log git checkout $repo_tag
+  $clone || log git checkout $repo_tag
 else
   echo Changing the current directory to \~/$repo_dir
   cd $repo_dir

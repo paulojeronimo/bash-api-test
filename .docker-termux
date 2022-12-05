@@ -1,3 +1,6 @@
 # vim: syntax=bash
 
+# This file is read by
+#   https://github.com/paulojeronimo/dotfiles/blob/master/.scripts/docker/docker-termux
+
 container_name=${PWD##*/}
