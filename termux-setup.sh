@@ -3,7 +3,7 @@
 repo_service=${repo_service:-https://github.com}
 repo=${repo:-paulojeronimo/bash-api-test}
 dotdir=.${repo#*/}
-repo_branch=${1:-main}
+repo_tag=${1:-main}
 LOG_LINK=termux-install.log
 
 is-installed() {
@@ -69,9 +69,9 @@ repo_dir=$(basename $repo)
 if ! [ -d $repo_dir ]
 then
   log git clone $repo_service/$repo
-  echo Changing the current directory to \~/$repo_dir \(branch $repo_branch\)
+  echo Changing the current directory to \~/$repo_dir \(branch $repo_tag\)
   cd $repo_dir
-  log git switch $repo_branch
+  log git checkout $repo_tag
 else
   echo Changing the current directory to \~/$repo_dir
   cd $repo_dir
