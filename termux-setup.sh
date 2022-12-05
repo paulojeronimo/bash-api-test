@@ -3,6 +3,7 @@
 repo_service=${repo_service:-https://github.com}
 repo=${repo:-paulojeronimo/bash-api-test}
 repo_branch=${1:-main}
+LOG_LINK=termux-install.log
 
 is-installed() {
   command -v $1 > /dev/null || return $?
@@ -10,13 +11,17 @@ is-installed() {
 }
 
 log() {
-  local log_file=~/termux-install.log
+  local log_file=~/$LOG_LINK
   local cmd="$@"
   echo "$cmd"
-  if ! $cmd &> $log_file
+  echo -e "[$(date +%X) BEGIN]: $cmd\n----" &>> $log_file
+  if ! $cmd &>> $log_file
   then
     echo -e "\tSome error occurred!"
-    echo -e "\tPlease, see the details in" $log_file
+    echo -e "\tPlease, see the details in" \~/$LOG_LINK
+  else
+    echo -e "----\n[$(date +%X) END]: $cmd" &>> $log_file
+    echo &>> $log_file
   fi
 }
 
@@ -39,12 +44,13 @@ pkg-install() {
   done
 }
 
+cd
+ln -sf $(mktemp) $LOG_LINK
 echo Configuring your Termux. Please, wait!
 pkg-install tmux vim git python nodejs jq yq
 is-installed httpie || log pip install httpie
 is-installed json-server || log npm install -g json-server
 
-cd
 repo_dir=$(basename $repo)
 if ! [ -d $repo_dir ]
 then
