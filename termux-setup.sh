@@ -2,6 +2,7 @@
 
 repo_service=${repo_service:-https://github.com}
 repo=${repo:-paulojeronimo/bash-api-test}
+dotdir=.${repo#*/}
 repo_branch=${1:-main}
 LOG_LINK=termux-install.log
 
@@ -11,14 +12,14 @@ is-installed() {
 }
 
 log() {
-  local log_file=~/$LOG_LINK
+  local log_file=~/$dotdir/$LOG_LINK
   local cmd="$@"
   echo "$cmd"
   echo -e "[$(date +%X) BEGIN]: $cmd\n----" &>> $log_file
   if ! $cmd &>> $log_file
   then
     echo -e "\tSome error occurred!"
-    echo -e "\tPlease, see the details in" \~/$LOG_LINK
+    echo -e "\tPlease, see the details in" \~/$dotdir/$LOG_LINK
   else
     echo -e "----\n[$(date +%X) END]: $cmd" &>> $log_file
     echo &>> $log_file
@@ -39,14 +40,27 @@ pkg-install() {
     yes | log pkg install $pkg
     case $pkg in
       python) log pip install --upgrade pip;;
-      nodejs) log npm install npm@latest -g;;
+      nodejs) : 
+        # There is a bug when updating to latest npm: https://github.com/termux/termux-packages/issues/13293
+        #   Related to https://github.com/npm/cli/issues/5114
+        #log npm install npm@latest -g
+        ;;
     esac
   done
 }
 
 cd
-ln -sf $(mktemp) $LOG_LINK
-echo Configuring your Termux. Please, wait!
+mkdir -p ~/$dotdir
+ln -sf $(mktemp) ~/$dotdir/$LOG_LINK
+echo Configuring your Termux. Please, be patient!
+upgraded=~/$dotdir/pkg-upgrade
+if ! [ -f $upgraded ]
+then
+  echo Upgrading packages ...
+  yes | log pkg upgrade
+  log pkg update
+  touch $upgraded
+fi
 pkg-install tmux vim git python nodejs jq yq
 is-installed httpie || log pip install httpie
 is-installed json-server || log npm install -g json-server
